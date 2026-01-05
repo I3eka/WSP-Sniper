@@ -33,7 +33,7 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ### Из исходного кода
 
 ```bash
-git clone https://github.com/your-username/wsp-sniper.git
+git clone https://github.com/I3eka/wsp-sniper.git
 cd wsp_sniper_cli
 uv sync
 ```
