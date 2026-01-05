@@ -1,4 +1,4 @@
-# WSP Sniper
+# WSP Sniper CLI
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -63,7 +63,7 @@ python main.py
 При первом запуске `uv run main.py` бот автоматически определит отсутствие конфигурации и запустит интерактивный мастер:
 
 1.  Введите **Username** и **Password** от WSP.
-2.  Введите **Желаемое время старта** в вашем *локальном* времени (например, `09:00:00.000000`).
+2.  Введите **Желаемое время старта** в вашем *локальном* времени (например, `10:00:00.000000`).
 3.  Бот создаст файл `.env` и продолжит работу.
 
 ### Процесс регистрации
