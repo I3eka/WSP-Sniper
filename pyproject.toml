@@ -1,15 +1,17 @@
 [project]
 name = "wsp-sniper-cli"
-version = "0.9.0"
-description = "WSP Sniper CLI - Automated lesson registration tool for WSP"
+version = "1.0.0"
+description = "WSP Sniper - Automated lesson registration tool for WSP"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aiohttp>=3.13.3",
     "loguru>=0.7.3",
     "ntplib>=0.4.0",
+    "pandas>=2.3.3",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "rich>=14.2.0",
+    "streamlit>=1.52.2",
     "tenacity>=9.1.2",
 ]

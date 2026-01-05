@@ -60,7 +60,11 @@ class WSPAsyncClient:
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=2)
     )
-    async def get_accruals(self) -> List[int]:
+    async def get_accruals(self) -> List[Dict[str, Any]]:
+        """
+        Fetches list of available subjects with metadata.
+        Returns: List of dictionary objects (containing 'id', 'disciplineName', etc.)
+        """
         if not self.user_id:
             raise Exception("User ID not set. Call login() first.")
 
@@ -68,7 +72,7 @@ class WSPAsyncClient:
         async with self.session.get(url) as response:
             response.raise_for_status()
             data = await response.json()
-            return [subject["id"] for subject in data.get("ACCRUALS", [])]
+            return data.get("ACCRUALS", [])
 
     @retry(stop=stop_after_attempt(3))
     async def get_schedule(self, subject_id: int) -> Dict[str, Any]:

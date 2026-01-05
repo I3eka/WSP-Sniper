@@ -2,7 +2,7 @@ import asyncio
 import os
 from loguru import logger
 from src.utils.logging import setup_logger
-from src.ui.formatting import display_logo
+from src.ui.cli.formatting import display_logo
 
 
 async def main():
@@ -18,7 +18,7 @@ async def main():
         from src.api.client import WSPAsyncClient
         from src.core.scheduler import TimeScheduler
         from src.core.registration import RegistrationLogic
-        from src.ui.cli import CLI
+        from src.ui.cli.menu import CLI
     except Exception as e:
         logger.critical(f"Configuration Error: {e}")
         return
@@ -30,26 +30,17 @@ async def main():
     async with WSPAsyncClient() as client:
         try:
             await client.login()
-
-            subjects_ids = await client.get_accruals()
-            if not subjects_ids:
+            subjects_data = await client.get_accruals()
+            if not subjects_data:
                 logger.warning("No subjects available for registration.")
                 return
 
+            subjects_ids = [s["id"] for s in subjects_data]
             logger.info(f"Found {len(subjects_ids)} subjects.")
 
             loaded_plan = cli.ask_to_load_plan()
-
             if loaded_plan:
-                valid_plan = {}
-                for sub_id, payload in loaded_plan.items():
-                    if sub_id in subjects_ids:
-                        valid_plan[sub_id] = payload
-                    else:
-                        logger.warning(
-                            f"Subject {sub_id} from saved plan is no longer available. Skipping."
-                        )
-
+                valid_plan = {k: v for k, v in loaded_plan.items() if k in subjects_ids}
                 registration_plan = valid_plan
 
             if not registration_plan:
@@ -75,7 +66,6 @@ async def main():
 
             scheduler.sync_ntp()
             target_ts = scheduler.get_target_timestamp()
-
             await scheduler.wait_until_target(target_ts)
 
             logger.warning(">>> LAUNCHING REGISTRATION REQUESTS <<<")

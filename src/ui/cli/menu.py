@@ -1,12 +1,9 @@
-import os
-import json
 from typing import List, Dict, Any
 from rich.prompt import Prompt, Confirm
-from src.ui.formatting import console, create_schedule_table, print_header
+from src.ui.cli.formatting import console, create_schedule_table, print_header
 from src.utils.helpers import format_time, get_lesson_type_name, get_lesson_short_code
 from src.core.registration import RegistrationLogic
-
-SAVE_FILE = "saved_plan.json"
+from src.utils.storage import load_saved_plan, save_plan_to_disk, SAVE_FILE
 
 
 class CLI:
@@ -15,40 +12,30 @@ class CLI:
         return Confirm.ask("[bold yellow]Confirm registration blueprint?[/bold yellow]")
 
     def ask_to_load_plan(self) -> Dict[int, List[int]]:
-        """
-        Checks for a saved plan file and asks user if they want to use it.
-        """
-        if not os.path.exists(SAVE_FILE):
+        """Interactively asks to load the plan if it exists."""
+        loaded_plan = load_saved_plan()
+        if not loaded_plan:
             return {}
 
         console.print(
             f"\n[bold cyan][?] Found a saved plan in '{SAVE_FILE}'.[/bold cyan]"
         )
         if Confirm.ask("Do you want to load the previous configuration?"):
-            try:
-                with open(SAVE_FILE, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    plan = {int(k): v for k, v in data.items()}
-                console.print("[green]Plan loaded successfully![/green]")
-                return plan
-            except Exception as e:
-                console.print(f"[red]Failed to load plan: {e}[/red]")
+            console.print("[green]Plan loaded successfully![/green]")
+            return loaded_plan
         return {}
 
     def save_plan(self, plan: Dict[int, List[int]]):
-        """
-        Saves the current registration plan to disk.
-        """
-        try:
-            with open(SAVE_FILE, "w", encoding="utf-8") as f:
-                json.dump(plan, f, indent=4)
+        """Saves plan with CLI feedback."""
+        if save_plan_to_disk(plan):
             console.print(
                 f"[green][✓] Plan saved to '{SAVE_FILE}' for next time.[/green]"
             )
-        except Exception as e:
-            console.print(f"[red]Warning: Failed to save plan: {e}[/red]")
+        else:
+            console.print("[red]Warning: Failed to save plan.[/red]")
 
     def interactive_subject_selection(self, subject_data: Dict[str, Any]) -> List[int]:
+        # ... (Same logic as before, just kept compact here for brevity)
         subject = subject_data.get("SEMESTER_SUBJECT", {})
         schedules = subject_data.get("SCHEDULES", [])
 
@@ -118,13 +105,12 @@ class CLI:
             chosen_codes = list(set(c.upper() for c in user_input.split() if c))
 
             if not all(c in current_stream_map for c in chosen_codes):
-                console.print("[red]Invalid code entered. Check table above.[/red]")
+                console.print("[red]Invalid code entered.[/red]")
                 continue
 
             is_valid, msg = RegistrationLogic.validate_selection(
                 chosen_codes, current_stream_map, req_counts
             )
-
             if is_valid:
                 console.print("[green]Selection Validated.[/green]")
                 break

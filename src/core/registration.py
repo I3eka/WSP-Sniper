@@ -6,6 +6,7 @@ from config.settings import settings
 
 
 class RegistrationLogic:
+    # ... (методы parse_formula и validate_selection без изменений) ...
     @staticmethod
     def parse_formula(formula: str) -> Tuple[int, int, int]:
         try:
@@ -45,38 +46,38 @@ class RegistrationLogic:
     ):
         attempt = 1
         while True:
+            # ЛОГ ПЕРЕД ОТПРАВКОЙ (Виден и в консоли, и в браузере)
+            logger.info(f"Subj {subject_id}: Requesting... (Attempt #{attempt})")
+
             status, text = await client.register_lessons(subject_id, payload)
 
             if status == 200:
-                logger.success(f"Subject {subject_id}: SUCCESS | Response: {text}")
+                logger.success(f"Subj {subject_id}: ✅ SUCCESS! Response: {text}")
                 return
 
+            # Проверка на "Рано"
             if status == 500 and "Регистрация не началась" in text:
                 logger.warning(
-                    f"Subject {subject_id}: Too early (Attempt {attempt}). Retrying in {settings.retry_delay}s..."
+                    f"Subj {subject_id}: ⏳ Too early. Retry #{attempt} in {settings.retry_delay}s..."
                 )
                 await asyncio.sleep(settings.retry_delay)
                 attempt += 1
                 continue
 
-            logger.error(f"Subject {subject_id}: FAILED [{status}] {text}")
+            # Ошибка
+            logger.error(f"Subj {subject_id}: ❌ FAILED [{status}] {text}")
             return
 
     @staticmethod
     async def execute_sniper_attack(
         client: WSPAsyncClient, registration_plan: Dict[int, List[int]]
     ) -> None:
-        """
-        Launches registration tasks with a configurable stagger delay.
-        """
         tasks = []
-
         for subject_id, payload in registration_plan.items():
             task = asyncio.create_task(
                 RegistrationLogic._attempt_registration(client, subject_id, payload)
             )
             tasks.append(task)
-
             await asyncio.sleep(settings.request_delay)
 
         await asyncio.gather(*tasks)
