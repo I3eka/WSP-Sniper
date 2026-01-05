@@ -20,3 +20,4 @@ pytest.ini
 README.md
 .dockerignore
 .ruff_cache
+LICENSE
