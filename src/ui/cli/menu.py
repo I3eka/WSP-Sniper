@@ -47,7 +47,7 @@ class CLI:
             console.print("[red]No schedule available.[/red]")
             return []
 
-        streams = {}
+        streams: dict[str, list[dict[str, Any]]] = {}
         for sch in schedules:
             sid = str(sch.get("stream", "N/A"))
             streams.setdefault(sid, []).append(sch)
@@ -65,8 +65,8 @@ class CLI:
             console.print(f"\n[{title_style}]→ Stream {stream_id}[/{title_style}]")
 
             for s in lessons:
-                l_type = get_lesson_type_name(s.get("lessonTypeId"))
-                s_code = get_lesson_short_code(s.get("lessonTypeId"))
+                l_type = get_lesson_type_name(int(s.get("lessonTypeId", 0)))
+                s_code = get_lesson_short_code(int(s.get("lessonTypeId", 0)))
                 grp = s.get("group")
                 sel_code = f"{s_code}{grp}"
                 selection_code_map[sel_code] = s
@@ -93,14 +93,16 @@ class CLI:
 
         current_stream_map = {}
         for s in stream_lessons:
-            code = f"{get_lesson_short_code(s.get('lessonTypeId'))}{s.get('group')}"
+            short_code = get_lesson_short_code(int(s.get("lessonTypeId", 0)))
+            code = f"{short_code}{s.get('group')}"
             current_stream_map[code] = s
 
         req_counts = RegistrationLogic.parse_formula(subject.get("formula"))
 
         while True:
             console.print(
-                f"[bold]Selected Stream {selected_stream}. Enter codes (e.g. L1 P1).[/bold]"
+                f"[bold]Selected Stream {selected_stream}. "
+                f"Enter codes (e.g. L1 P1).[/bold]"
             )
             user_input = Prompt.ask("Codes")
             chosen_codes = list(set(c.upper() for c in user_input.split() if c))

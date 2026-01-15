@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 import pandas as pd
 import streamlit as st
@@ -84,7 +85,7 @@ def _render_subject_details(user_id, s_id, s_name, s_code, plan):
         st.warning("No schedule available.")
         return
 
-    streams = {}
+    streams: dict[str, list[dict[str, Any]]] = {}
     for s in schedules:
         streams.setdefault(str(s.get("stream", "N/A")), []).append(s)
 
@@ -97,6 +98,10 @@ def _render_subject_details(user_id, s_id, s_name, s_code, plan):
             rows = []
             for lesson in lessons:
                 l_id = lesson["id"]
+                begin = format_time(lesson.get("beginTime"))
+                end = format_time(lesson.get("endTime"))
+                count = lesson.get("studentCount")
+                max_count = lesson.get("studentCountMax")
                 rows.append(
                     {
                         "id": l_id,
@@ -104,9 +109,9 @@ def _render_subject_details(user_id, s_id, s_name, s_code, plan):
                         "Code": s_code,
                         "Type": get_lesson_type_name(lesson.get("lessonTypeId")),
                         "Day": lesson.get("weekDay"),
-                        "Time": f"{format_time(lesson.get('beginTime'))}-{format_time(lesson.get('endTime'))}",
+                        "Time": f"{begin}-{end}",
                         "Teacher": lesson.get("teacher"),
-                        "Seats": f"{lesson.get('studentCount')}/{lesson.get('studentCountMax')}",
+                        "Seats": f"{count}/{max_count}",
                     }
                 )
 

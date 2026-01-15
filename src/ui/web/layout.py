@@ -7,7 +7,7 @@ def apply_styles():
         """
         <style>
         .timer-box {
-            padding: 10px; border: 1px solid #444; border-radius: 5px; 
+            padding: 10px; border: 1px solid #444; border-radius: 5px;
             background: #0e1117; color: #00ff00; text-align: center;
             font-family: monospace; font-size: 1.2em; margin-bottom: 20px;
         }

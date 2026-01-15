@@ -1,3 +1,9 @@
+"""Setup module for WSP-Sniper first launch configuration.
+
+This module provides interactive setup functionality to configure
+user credentials and timing settings for the WSP-Sniper bot.
+"""
+
 from rich.console import Console
 from rich.prompt import Prompt
 
@@ -5,9 +11,9 @@ console = Console()
 
 
 def run_first_launch_setup():
-    """
-    Interactively prompts the user for configuration data
-    and saves it to a .env file.
+    """Interactively prompt the user for configuration data.
+
+    Saves the collected configuration to a .env file.
     """
     console.print("[bold blue]═" * 50 + "[/bold blue]")
     console.print(
@@ -23,7 +29,8 @@ def run_first_launch_setup():
     password = Prompt.ask("[bold cyan]Password[/bold cyan]", password=True)
 
     console.print(
-        "\n[yellow]Time Configuration:[/yellow] Enter the start time as you see it on your local clock."
+        "\n[yellow]Time Configuration:[/yellow] "
+        "Enter the start time as you see it on your local clock."
     )
     time_local = Prompt.ask(
         "[bold cyan]Desired Start Time (Local)[/bold cyan]", default="10:00:00.000000"
@@ -39,7 +46,7 @@ WSP_DESIRED_TIME_LOCAL="{time_local}"
 # Increase if you get 500 Errors. Default is 0.2
 WSP_REQUEST_DELAY="0.2"
 
-# Delay (in seconds) to wait before retrying the SAME subject 
+# Delay (in seconds) to wait before retrying the SAME subject
 # if the server says "Registration not started". Default is 0.5
 WSP_RETRY_DELAY="0.5"
 """

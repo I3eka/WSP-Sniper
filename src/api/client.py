@@ -1,3 +1,9 @@
+"""Async HTTP client for WSP API interactions.
+
+This module provides:
+- WSPAsyncClient: async context manager for authentication and API requests.
+"""
+
 from typing import Any
 
 import aiohttp
@@ -13,17 +19,43 @@ from config.settings import settings
 
 
 class WSPAsyncClient:
+    """Async HTTP client for WSP API interactions.
+
+    Attributes:
+    ----------
+    base_url : str
+        The base URL for API requests.
+    session : aiohttp.ClientSession | None
+        The aiohttp session for making requests.
+    user_id : int | None
+        The authenticated user's ID.
+
+    Methods:
+    -------
+    login() -> int
+        Authenticates and returns the User ID.
+    get_accruals() -> list[dict[str, Any]]
+        Fetches list of available subjects with metadata.
+    get_schedule(subject_id: int) -> dict[str, Any]
+        Fetches the schedule for a given subject.
+    register_lessons(subject_id: int, payload: list[int]) -> tuple[int, str]
+        Sends the final registration payload.
+    """
+
     def __init__(self):
+        """Initialize the WSP async client with default settings."""
         self.base_url = settings.base_url
         self.session: aiohttp.ClientSession | None = None
         self.user_id: int | None = None
 
     async def __aenter__(self):
+        """Enter the async context manager and initialize the HTTP session."""
         connector = aiohttp.TCPConnector(ssl=False, limit=100)
         self.session = aiohttp.ClientSession(connector=connector)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the async context manager and close the HTTP session."""
         if self.session:
             await self.session.close()
 
@@ -35,6 +67,9 @@ class WSPAsyncClient:
     )
     async def login(self) -> int:
         """Authenticates and returns the User ID."""
+        if not self.session:
+            raise Exception("Session not initialized. Use async context manager.")
+
         url = f"{self.base_url}/login?remember-me=1"
         data = {
             "remember-me": "1",
@@ -62,10 +97,12 @@ class WSPAsyncClient:
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=2)
     )
     async def get_accruals(self) -> list[dict[str, Any]]:
+        """Fetches list of available subjects with metadata.
+
+        Returns: List of dictionary objects (containing 'id', 'disciplineName', etc.).
         """
-        Fetches list of available subjects with metadata.
-        Returns: List of dictionary objects (containing 'id', 'disciplineName', etc.)
-        """
+        if not self.session:
+            raise Exception("Session not initialized. Use async context manager.")
         if not self.user_id:
             raise Exception("User ID not set. Call login() first.")
 
@@ -77,6 +114,16 @@ class WSPAsyncClient:
 
     @retry(stop=stop_after_attempt(3))
     async def get_schedule(self, subject_id: int) -> dict[str, Any]:
+        """Fetch the schedule for a given subject.
+
+        Parameters:
+            subject_id: The ID of the subject to fetch the schedule for.
+
+        Returns:
+            The schedule data for the specified subject.
+        """
+        if not self.session:
+            raise Exception("Session not initialized. Use async context manager.")
         url = (
             f"{self.base_url}/registration/student/{self.user_id}/schedule/{subject_id}"
         )
@@ -87,11 +134,16 @@ class WSPAsyncClient:
     async def register_lessons(
         self, subject_id: int, payload: list[int]
     ) -> tuple[int, str]:
+        """Sends the final registration payload.
+
+        Returns: (HTTP_STATUS_CODE, RESPONSE_TEXT).
         """
-        Sends the final registration payload.
-        Returns: (HTTP_STATUS_CODE, RESPONSE_TEXT)
-        """
-        url = f"{self.base_url}/registration/student/{self.user_id}/schedule/{subject_id}/save"
+        if not self.session:
+            raise Exception("Session not initialized. Use async context manager.")
+        url = (
+            f"{self.base_url}/registration/student/{self.user_id}"
+            f"/schedule/{subject_id}/save"
+        )
         try:
             async with self.session.post(url, json=payload) as response:
                 text = await response.text()

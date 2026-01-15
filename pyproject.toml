@@ -1,17 +1,49 @@
 [project]
-name = "WSP-Sniper"
+name = "wsp-sniper"
 version = "1.0.0"
 description = "WSP Sniper - Automated lesson registration tool for WSP"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "aiohttp>=3.13.3",
-    "loguru>=0.7.3",
-    "ntplib>=0.4.0",
-    "pandas>=2.3.3",
-    "pydantic>=2.12.5",
-    "pydantic-settings>=2.12.0",
-    "rich>=14.2.0",
-    "streamlit>=1.52.2",
-    "tenacity>=9.1.2",
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
+dependencies = [
+  "aiohttp>=3.13.3",
+  "loguru>=0.7.3",
+  "ntplib>=0.4",
+  "pandas>=2.3.3",
+  "pydantic>=2.12.5",
+  "pydantic-settings>=2.12",
+  "rich>=14.2",
+  "streamlit>=1.52.2",
+  "tenacity>=9.1.2",
+]
+
+[dependency-groups]
+dev = [
+  "mypy>=1.19.1",
+  "pandas-stubs>=2.3.3.260113",
+  "pre-commit>=4.5.1",
+]
+
+[tool.ruff]
+target-version = "py313"
+
+# Включаем самые полезные наборы правил:
+# E, W - стиль (pycodestyle)
+# F - ошибки (pyflakes)
+# UP - pyupgrade (современный синтаксис)
+# I - isort (сортировка импортов)
+# B - bugbear (поиск багов)
+# SIM - simplify (упрощение кода)
+# N - naming (PEP8 нейминг)
+# S - bandit (поиск уязвимостей безопасности)
+lint.select = [ "B", "E", "F", "I", "N", "S", "SIM", "UP", "W" ]
+lint.fixable = [ "ALL" ]
+
+[tool.mypy]
+python_version = "3.12"
+# ... ваши настройки ...
+plugins = [ "pydantic.mypy" ]

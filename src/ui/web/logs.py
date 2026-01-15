@@ -24,7 +24,8 @@ def render_logs_widget():
     st.subheader("📝 Live Operation Logs")
     st.markdown(
         """
-        <div class="timer-box">UTC: <span id="utc-time">--:--:--</span> | Local: <span id="local-time">--:--:--</span></div>
+        <div class="timer-box">UTC: <span id="utc-time">--:--:--</span> | """
+        """Local: <span id="local-time">--:--:--</span></div>
         <script>
         setInterval(() => {
             const now = new Date();

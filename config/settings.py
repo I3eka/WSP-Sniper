@@ -8,13 +8,10 @@ class Settings(BaseSettings):
     password: str = Field(..., alias="WSP_PASSWORD")
     desired_time_local: str = Field("10:00:00.000000", alias="WSP_DESIRED_TIME_LOCAL")
 
-    # Delay between sending requests for DIFFERENT subjects
     request_delay: float = Field(0.5, alias="WSP_REQUEST_DELAY")
 
-    # Delay between retries for the SAME subject if "Registration not started"
     retry_delay: float = Field(0.5, alias="WSP_RETRY_DELAY")
 
-    # HTTP Retry settings (network errors)
     max_retries: int = 3
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

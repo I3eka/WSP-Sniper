@@ -1,15 +1,37 @@
+"""Time scheduling utilities for precise execution timing.
+
+This module provides:
+- TimeScheduler: class for NTP synchronization and high-precision waiting.
+"""
+
 import asyncio
 import time
 from datetime import datetime
 
-import ntplib
+import ntplib  # type: ignore[import-untyped]
 from loguru import logger
 
 from config.settings import settings
 
 
 class TimeScheduler:
+    """Handles NTP synchronization and high-precision waiting for target times.
+
+    Attributes:
+        time_offset (float): The offset between system time and NTP time in seconds.
+
+    Methods:
+        sync_ntp() -> None: Synchronizes with NTP server and calculates time offset.
+        get_corrected_time() -> float: Returns the current time corrected by
+            the NTP offset.
+        get_target_timestamp() -> float: Parses the target time from settings
+            and returns UTC timestamp.
+        wait_until_target(target_timestamp: float) -> None: High-precision
+            busy-wait loop until the target timestamp.
+    """
+
     def __init__(self):
+        """Initialize the TimeScheduler with zero time offset."""
         self.time_offset = 0.0
 
     def sync_ntp(self) -> None:
@@ -26,11 +48,16 @@ class TimeScheduler:
             self.time_offset = 0.0
 
     def get_corrected_time(self) -> float:
+        """Return the current time corrected by the NTP offset.
+
+        Returns:
+            float: The current system time adjusted by the NTP time offset.
+        """
         return time.time() + self.time_offset
 
     def get_target_timestamp(self) -> float:
-        """
-        Parses the LOCAL target time string from settings.
+        """Parses the LOCAL target time string from settings.
+
         Converts user's local wall-clock time -> UTC timestamp.
         """
         now = datetime.now()
