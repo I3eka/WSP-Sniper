@@ -1,21 +1,20 @@
 import asyncio
+
 import streamlit as st
 from loguru import logger
+
 from src.api.client import WSPAsyncClient
 from src.core.registration import RegistrationLogic
 from src.core.scheduler import TimeScheduler
 from src.ui.web.scheduler import render_web_scheduler
 
 
-# Класс для перенаправления логов в st.status
 class StatusSink:
     def __init__(self, status_container):
         self.status = status_container
 
     def write(self, message):
-        # clean message from tags if needed, or just print
         text = message.record["message"]
-        # Пишем в UI
         self.status.write(f"👉 {text}")
 
 
@@ -44,10 +43,8 @@ def render_dashboard():
 
 
 def _launch_sequence(plan):
-    # Создаем контейнер статуса
     status_container = st.status("Sniper Operation In Progress...", expanded=True)
 
-    # Добавляем наш Sink в Loguru
     sink_id = logger.add(StatusSink(status_container), format="{message}", level="INFO")
 
     async def attack_flow():
@@ -77,5 +74,4 @@ def _launch_sequence(plan):
         st.error(f"Critical Error: {e}")
         logger.exception(e)
     finally:
-        # Обязательно удаляем перехватчик, чтобы не дублировать логи потом
         logger.remove(sink_id)

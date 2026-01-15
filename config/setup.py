@@ -16,10 +16,8 @@ def run_first_launch_setup():
     console.print("It seems you don't have a configuration file yet.")
     console.print("Please enter your KBTU WSP credentials below.\n")
 
-    # 1. Set Default URL
     base_url = "https://wsp2.kbtu.kz/bachelor/api"
 
-    # 2. Gather User Input
     username = Prompt.ask("[bold cyan]Username[/bold cyan]")
 
     password = Prompt.ask("[bold cyan]Password[/bold cyan]", password=True)
@@ -28,10 +26,9 @@ def run_first_launch_setup():
         "\n[yellow]Time Configuration:[/yellow] Enter the start time as you see it on your local clock."
     )
     time_local = Prompt.ask(
-        "[bold cyan]Desired Start Time (Local)[/bold cyan]", default="09:00:00.000000"
+        "[bold cyan]Desired Start Time (Local)[/bold cyan]", default="10:00:00.000000"
     )
 
-    # 3. Construct .env content
     env_content = f"""WSP_BASE_URL="{base_url}"
 WSP_USERNAME="{username}"
 WSP_PASSWORD="{password}"
@@ -47,7 +44,6 @@ WSP_REQUEST_DELAY="0.2"
 WSP_RETRY_DELAY="0.5"
 """
 
-    # 4. Write file
     try:
         with open(".env", "w", encoding="utf-8") as f:
             f.write(env_content)

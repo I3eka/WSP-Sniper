@@ -1,6 +1,8 @@
 import asyncio
+
 import pandas as pd
 import streamlit as st
+
 from src.api.client import WSPAsyncClient
 from src.utils.helpers import format_time, get_lesson_type_name
 from src.utils.storage import load_saved_plan, save_plan_to_disk
@@ -32,7 +34,6 @@ def _parse_subject_identity(subject_data: dict) -> tuple[str, str]:
 
 def render_web_scheduler():
     user_id = st.session_state.get("user_id")
-    # Ожидаем список объектов, а не ID
     subjects = st.session_state.get("raw_subjects", [])
 
     if "plan" not in st.session_state:
@@ -49,12 +50,11 @@ def render_web_scheduler():
 
         for subject in subjects:
             s_name, s_code = _parse_subject_identity(subject)
-            s_id = int(subject.get("id"))  # Ensure int
+            s_id = int(subject.get("id"))
 
             is_planned = s_id in plan
             icon = "✅" if is_planned else "⬜"
 
-            # Checkbox style selection
             if st.checkbox(f"{icon} {s_name} ({s_code})", key=f"chk_{s_id}"):
                 _render_subject_details(user_id, s_id, s_name, s_code, plan)
 
@@ -88,7 +88,6 @@ def _render_subject_details(user_id, s_id, s_name, s_code, plan):
     for s in schedules:
         streams.setdefault(str(s.get("stream", "N/A")), []).append(s)
 
-    # Wrap in FORM to prevent auto-reload on every checkbox click
     with st.form(f"form_{s_id}"):
         all_dfs = {}
         current_selection = plan.get(s_id, [])
@@ -129,12 +128,10 @@ def _render_subject_details(user_id, s_id, s_name, s_code, plan):
                 plan[s_id] = final_ids
                 st.session_state.plan = plan
 
-                # Shared Storage Save
                 save_plan_to_disk(plan)
                 st.toast(f"Saved {s_name}")
                 st.rerun()
             else:
-                # If unchecked everything, remove from plan
                 if s_id in plan:
                     del plan[s_id]
                     st.session_state.plan = plan

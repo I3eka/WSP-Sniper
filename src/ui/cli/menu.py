@@ -1,17 +1,19 @@
-from typing import List, Dict, Any
-from rich.prompt import Prompt, Confirm
-from src.ui.cli.formatting import console, create_schedule_table, print_header
-from src.utils.helpers import format_time, get_lesson_type_name, get_lesson_short_code
+from typing import Any
+
+from rich.prompt import Confirm, Prompt
+
 from src.core.registration import RegistrationLogic
-from src.utils.storage import load_saved_plan, save_plan_to_disk, SAVE_FILE
+from src.ui.cli.formatting import console, create_schedule_table, print_header
+from src.utils.helpers import format_time, get_lesson_short_code, get_lesson_type_name
+from src.utils.storage import SAVE_FILE, load_saved_plan, save_plan_to_disk
 
 
 class CLI:
-    def get_user_confirmation(self, plan: Dict) -> bool:
+    def get_user_confirmation(self, plan: dict) -> bool:
         console.print_json(data=plan)
         return Confirm.ask("[bold yellow]Confirm registration blueprint?[/bold yellow]")
 
-    def ask_to_load_plan(self) -> Dict[int, List[int]]:
+    def ask_to_load_plan(self) -> dict[int, list[int]]:
         """Interactively asks to load the plan if it exists."""
         loaded_plan = load_saved_plan()
         if not loaded_plan:
@@ -25,7 +27,7 @@ class CLI:
             return loaded_plan
         return {}
 
-    def save_plan(self, plan: Dict[int, List[int]]):
+    def save_plan(self, plan: dict[int, list[int]]):
         """Saves plan with CLI feedback."""
         if save_plan_to_disk(plan):
             console.print(
@@ -34,8 +36,7 @@ class CLI:
         else:
             console.print("[red]Warning: Failed to save plan.[/red]")
 
-    def interactive_subject_selection(self, subject_data: Dict[str, Any]) -> List[int]:
-        # ... (Same logic as before, just kept compact here for brevity)
+    def interactive_subject_selection(self, subject_data: dict[str, Any]) -> list[int]:
         subject = subject_data.get("SEMESTER_SUBJECT", {})
         schedules = subject_data.get("SCHEDULES", [])
 

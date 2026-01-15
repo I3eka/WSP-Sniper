@@ -1,5 +1,6 @@
 import json
 import os
+
 from loguru import logger
 
 SAVE_FILE = "saved_plan.json"
@@ -16,7 +17,6 @@ def load_saved_plan() -> dict:
     try:
         with open(SAVE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            # JSON keys are always strings, we need int keys for subject IDs
             return {int(k): v for k, v in data.items()}
     except Exception as e:
         logger.error(f"Failed to load saved plan: {e}")

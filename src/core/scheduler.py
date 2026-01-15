@@ -1,8 +1,10 @@
 import asyncio
 import time
-import ntplib
 from datetime import datetime
+
+import ntplib
 from loguru import logger
+
 from config.settings import settings
 
 

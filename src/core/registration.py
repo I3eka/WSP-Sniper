@@ -1,13 +1,15 @@
 import asyncio
-from typing import List, Dict, Any, Tuple
+from typing import Any
+
 from loguru import logger
-from src.api.client import WSPAsyncClient
+
 from config.settings import settings
+from src.api.client import WSPAsyncClient
 
 
 class RegistrationLogic:
     @staticmethod
-    def parse_formula(formula: str) -> Tuple[int, int, int]:
+    def parse_formula(formula: str) -> tuple[int, int, int]:
         try:
             return tuple(map(int, formula.split("/")))
         except (ValueError, IndexError, AttributeError):
@@ -15,10 +17,10 @@ class RegistrationLogic:
 
     @staticmethod
     def validate_selection(
-        selection_codes: List[str],
-        stream_code_map: Dict[str, Any],
-        required_counts: Tuple[int, int, int],
-    ) -> Tuple[bool, str]:
+        selection_codes: list[str],
+        stream_code_map: dict[str, Any],
+        required_counts: tuple[int, int, int],
+    ) -> tuple[bool, str]:
         req_l, req_b, req_p = required_counts
         if req_l == -1:
             return True, "Formula unknown, skipping validation."
@@ -37,7 +39,7 @@ class RegistrationLogic:
 
     @staticmethod
     async def _attempt_registration(
-        client: WSPAsyncClient, subject_id: int, payload: List[int]
+        client: WSPAsyncClient, subject_id: int, payload: list[int]
     ):
         """
         Пытается зарегистрироваться до победного конца.
@@ -77,7 +79,7 @@ class RegistrationLogic:
 
     @staticmethod
     async def execute_sniper_attack(
-        client: WSPAsyncClient, registration_plan: Dict[int, List[int]]
+        client: WSPAsyncClient, registration_plan: dict[int, list[int]]
     ) -> None:
         tasks = []
         for subject_id, payload in registration_plan.items():

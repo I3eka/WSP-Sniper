@@ -1,12 +1,13 @@
+from typing import Any
+
 import aiohttp
+from loguru import logger
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
 )
-from loguru import logger
-from typing import Any, Dict, List, Optional, Tuple
 
 from config.settings import settings
 
@@ -14,8 +15,8 @@ from config.settings import settings
 class WSPAsyncClient:
     def __init__(self):
         self.base_url = settings.base_url
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.user_id: Optional[int] = None
+        self.session: aiohttp.ClientSession | None = None
+        self.user_id: int | None = None
 
     async def __aenter__(self):
         connector = aiohttp.TCPConnector(ssl=False, limit=100)
@@ -60,7 +61,7 @@ class WSPAsyncClient:
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=2)
     )
-    async def get_accruals(self) -> List[Dict[str, Any]]:
+    async def get_accruals(self) -> list[dict[str, Any]]:
         """
         Fetches list of available subjects with metadata.
         Returns: List of dictionary objects (containing 'id', 'disciplineName', etc.)
@@ -75,7 +76,7 @@ class WSPAsyncClient:
             return data.get("ACCRUALS", [])
 
     @retry(stop=stop_after_attempt(3))
-    async def get_schedule(self, subject_id: int) -> Dict[str, Any]:
+    async def get_schedule(self, subject_id: int) -> dict[str, Any]:
         url = (
             f"{self.base_url}/registration/student/{self.user_id}/schedule/{subject_id}"
         )
@@ -84,8 +85,8 @@ class WSPAsyncClient:
             return await response.json()
 
     async def register_lessons(
-        self, subject_id: int, payload: List[int]
-    ) -> Tuple[int, str]:
+        self, subject_id: int, payload: list[int]
+    ) -> tuple[int, str]:
         """
         Sends the final registration payload.
         Returns: (HTTP_STATUS_CODE, RESPONSE_TEXT)

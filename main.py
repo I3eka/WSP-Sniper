@@ -1,8 +1,10 @@
 import asyncio
 import os
+
 from loguru import logger
-from src.utils.logging import setup_logger
+
 from src.ui.cli.formatting import display_logo
+from src.utils.logging import setup_logger
 
 
 async def main():
@@ -16,8 +18,8 @@ async def main():
 
     try:
         from src.api.client import WSPAsyncClient
-        from src.core.scheduler import TimeScheduler
         from src.core.registration import RegistrationLogic
+        from src.core.scheduler import TimeScheduler
         from src.ui.cli.menu import CLI
     except Exception as e:
         logger.critical(f"Configuration Error: {e}")
