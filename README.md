@@ -33,8 +33,8 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 ### Из исходного кода
 
 ```bash
-git clone https://github.com/I3eka/wsp-sniper.git
-cd wsp_sniper_cli
+git clone https://github.com/I3eka/WSP-Sniper.git
+cd WSP-Sniper
 uv sync
 ```
 
@@ -94,8 +94,8 @@ Please enter your KBTU WSP credentials below.
 ### Настройка окружения
 
 ```bash
-git clone https://github.com/I3eka/wsp-sniper.git
-cd wsp_sniper_cli
+git clone https://github.com/I3eka/WSP-Sniper.git
+cd WSP-Sniper
 uv venv
 source .venv/bin/activate
 uv pip install -r requirements.txt
