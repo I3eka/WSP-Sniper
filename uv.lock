@@ -1213,7 +1213,7 @@ wheels = [
 ]
 
 [[package]]
-name = "wsp-sniper-cli"
+name = "WSP-Sniper"
 version = "1.0.0"
 source = { virtual = "." }
 dependencies = [

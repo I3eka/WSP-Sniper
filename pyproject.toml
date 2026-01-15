@@ -1,5 +1,5 @@
 [project]
-name = "wsp-sniper-cli"
+name = "WSP-Sniper"
 version = "1.0.0"
 description = "WSP Sniper - Automated lesson registration tool for WSP"
 readme = "README.md"
