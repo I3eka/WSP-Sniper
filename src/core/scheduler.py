@@ -8,7 +8,7 @@ import asyncio
 import time
 from datetime import datetime
 
-import ntplib  # type: ignore[import-untyped]
+import ntplib  # type: ignore[import-untyped]  # ty: ignore[unused-ignore-comment]
 from loguru import logger
 
 from config.settings import settings
